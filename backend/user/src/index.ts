@@ -10,7 +10,7 @@ dotenv.config();
 connectDb();
 connectRabbitMQ();
 
-const redisClient = createClient({
+export const redisClient = createClient({
   url: process.env.REDIS_URL || "",
 });
 
@@ -20,7 +20,8 @@ redisClient
   .catch(console.error);
 
 const app = express();
-app.use("api/v1", userRouter);
+app.use(express.json());
+app.use("/api/v1", userRouter);
 
 const port = process.env.PORT;
 
