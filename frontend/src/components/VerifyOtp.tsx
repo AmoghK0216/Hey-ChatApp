@@ -1,12 +1,22 @@
 "use client";
-import { user_service } from "@/context/AppContext";
+import { useAppData, user_service } from "@/context/AppContext";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { ArrowRight, ChevronLeft, Loader, Lock } from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { redirect, useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
+import Loading from "./Loading";
+import toast from "react-hot-toast";
 
 const VerifyOtp = () => {
+  const {
+    isAuth,
+    setUser,
+    setIsAuth,
+    loading: userLoading,
+    fetchChats,
+    fetchUsers,
+  } = useAppData();
   const [loading, setLoading] = useState(false);
   const [otp, setOtp] = useState<string[]>(["", "", "", "", "", ""]);
   const [error, setError] = useState<string>("");
@@ -82,7 +92,7 @@ const VerifyOtp = () => {
         email,
         otp: otpString,
       });
-      alert(data.message);
+      toast.success(data.message);
       Cookies.set("token", data.token, {
         expires: 15,
         secure: false,
@@ -91,6 +101,11 @@ const VerifyOtp = () => {
 
       setOtp(["", "", "", "", "", ""]);
       inputRefs.current[0]?.focus();
+
+      setUser(data.user);
+      setIsAuth(true);
+      fetchUsers();
+      fetchChats();
     } catch (error: any) {
       setError(error.response.data.message);
     } finally {
@@ -107,7 +122,7 @@ const VerifyOtp = () => {
         email,
       });
 
-      alert(data.message);
+      toast.success(data.message);
       setTimer(60);
       setOtp(["", "", "", "", "", ""]);
       inputRefs.current[0]?.focus();
@@ -117,6 +132,11 @@ const VerifyOtp = () => {
       setResendLoading(false);
     }
   };
+
+  if (userLoading) return <Loading />;
+
+  if (isAuth) redirect("/chat");
+
   return (
     <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
       <div className="max-w-md w-full">
