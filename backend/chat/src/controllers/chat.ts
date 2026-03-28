@@ -58,7 +58,7 @@ export const getAllChats = TryCatch(
       chats.map(async (chat) => {
         const otherUserId = chat.users.find((id) => id !== userId);
         const unseenCount = await Message.countDocuments({
-          _id: chat._id,
+          chatId: chat._id,
           sender: { $ne: userId },
           seen: false,
         });
@@ -69,7 +69,7 @@ export const getAllChats = TryCatch(
           );
 
           return {
-            user: data,
+            user: data.user,
             chat: {
               ...chat.toObject(),
               latestMessage: chat.latestMessage || null,
