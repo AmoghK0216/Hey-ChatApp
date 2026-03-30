@@ -266,7 +266,7 @@ export const getMessagesByChat = TryCatch(
 
       res.json({
         messages: messages,
-        user: data,
+        user: data.user,
       });
     } catch (error) {
       res.json({
